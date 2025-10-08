@@ -1,22 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getTasks, deleteTask, updateTask } from "@/utils/api";
 
 export default function TaskListPage() {
-  // Temporary sample data
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Finish frontend UI", description: "Complete task creation form", dueDate: "2025-10-10" },
-    { id: 2, title: "Connect backend", description: "Link frontend to API", dueDate: "2025-10-12" },
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [editingTask, setEditingTask] = useState(null);
   const [updatedTitle, setUpdatedTitle] = useState("");
 
-  // Delete a task
-  const handleDelete = (id) => {
+  useEffect(() => {
+    async function fetchTasks() {
+      try {
+        const data = await getTasks();
+        setTasks(data);
+      } catch (err) {
+        setError("Failed to load tasks");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTasks();
+  }, []);
+
+  // Delete a task (optimistic)
+  const handleDelete = async (id) => {
     const confirmDelete = confirm("Are you sure you want to delete this task?");
-    if (confirmDelete) {
-      setTasks(tasks.filter((task) => task.id !== id));
+    if (!confirmDelete) return;
+
+    const prev = tasks;
+    setTasks(tasks.filter((task) => task.id !== id));
+    try {
+      await deleteTask(id);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to delete task");
+      setTasks(prev);
     }
   };
 
@@ -27,13 +49,21 @@ export default function TaskListPage() {
   };
 
   // Save edited task
-  const handleSave = () => {
-    setTasks(
-      tasks.map((t) =>
-        t.id === editingTask.id ? { ...t, title: updatedTitle } : t
-      )
+  const handleSave = async () => {
+    if (!editingTask) return;
+    const prev = tasks;
+    const updated = tasks.map((t) =>
+      t.id === editingTask.id ? { ...t, title: updatedTitle } : t
     );
+    setTasks(updated);
     setEditingTask(null);
+    try {
+      await updateTask(editingTask.id, { title: updatedTitle });
+    } catch (err) {
+      console.error(err);
+      setError("Failed to update task");
+      setTasks(prev);
+    }
   };
 
   return (
@@ -43,7 +73,11 @@ export default function TaskListPage() {
           Task List
         </h1>
 
-        {tasks.length === 0 ? (
+        {loading ? (
+          <p className="text-center text-gray-500">Loading tasks...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : tasks.length === 0 ? (
           <p className="text-center text-gray-500">No tasks yet.</p>
         ) : (
           <ul className="space-y-4">

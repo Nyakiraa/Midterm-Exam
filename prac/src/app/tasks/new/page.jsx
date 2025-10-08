@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createTask } from "@/utils/api";
 
 export default function NewTaskPage() {
   const [task, setTask] = useState({
@@ -15,17 +16,24 @@ export default function NewTaskPage() {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
 
     if (!task.title || !task.description || !task.dueDate) {
       setMessage("All fields are required!");
       return;
     }
 
-    console.log("Task created:", task);
-    setMessage("✅ Task created successfully (dummy for now)");
-    setTask({ title: "", description: "", dueDate: "" });
+    try {
+      const newTask = await createTask(task);
+      console.log("Created task:", newTask);
+      setMessage("✅ Task created successfully!");
+      setTask({ title: "", description: "", dueDate: "" });
+    } catch (err) {
+      console.error(err);
+      setMessage(`❌ Failed to create task. ${err?.message || ""}`);
+    }
   };
 
   return (
