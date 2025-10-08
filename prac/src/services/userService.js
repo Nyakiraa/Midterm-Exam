@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { validateRegistration, validateLogin } = require('../validators/authValidator');
+const { validateRegistration, validateLogin } = require('../../validators/authValidator');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'please-change-this-secret';
 

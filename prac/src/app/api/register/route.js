@@ -1,4 +1,4 @@
-const { register } = require('../../../controllers/authController');
+const { register } = require('../../controllers/authController');
 const { success, error } = require('../../../lib/response');
 
 /**

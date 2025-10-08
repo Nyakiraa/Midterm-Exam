@@ -1,4 +1,4 @@
-const { login } = require('../../../controllers/authController');
+const { login } = require('../../controllers/authController');
 const { success, error } = require('../../../lib/response');
 
 /**
