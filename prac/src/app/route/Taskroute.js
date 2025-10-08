@@ -1,7 +1,7 @@
 // src/app/api/tasks/route.js
 const express = require('express');
 const router = express.Router();
-const taskController = require('../../controller/taskController');
+const taskController = require('../controller/taskController');
 
 // POST /api/tasks - Create a new task
 router.post('/', taskController.createTask);
