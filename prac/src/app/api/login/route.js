@@ -1,7 +1,7 @@
-const { login } = require('../../../../controllers/authController');
+const { login } = require('../../../controllers/authController');
 
 /**
- * POST /api/auth/login
+ * POST /api/login
  */
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {

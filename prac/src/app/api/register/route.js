@@ -1,7 +1,7 @@
-const { register } = require('../../../../controllers/authController');
+const { register } = require('../../../controllers/authController');
 
 /**
- * POST /api/auth/register
+ * POST /api/register
  */
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
