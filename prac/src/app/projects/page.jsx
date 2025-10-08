@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import ErrorMessage from "../../components/ErrorMessage";
 
 export default function ProjectListPage() {
   const [projects, setProjects] = useState([]);
@@ -43,8 +45,8 @@ export default function ProjectListPage() {
     setFiltered(filteredList);
   }, [search, projects]);
 
-  if (loading) return <div className="text-center p-6">Loading projects...</div>;
-  if (error) return <div className="text-center text-red-600 p-6">{error}</div>;
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
