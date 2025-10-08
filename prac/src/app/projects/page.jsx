@@ -7,32 +7,29 @@ export default function ProjectListPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Temporary static data (simulate backend)
-    const fakeProjects = [
-      {
-        id: 1,
-        name: "Website Redesign",
-        description: "Update the UI and add dark mode.",
-        tasks: [
-          { id: 101, title: "Redesign homepage" },
-          { id: 102, title: "Add dark mode switch" },
-        ],
-      },
-      {
-        id: 2,
-        name: "Mobile App Launch",
-        description: "Prepare app for release on Play Store.",
-        tasks: [
-          { id: 201, title: "Create promo materials" },
-          { id: 202, title: "Finalize app icons" },
-        ],
-      },
-    ];
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-    setTimeout(() => {
-      setProjects(fakeProjects);
-      setLoading(false);
-    }, 800);
+        // 🔹 Replace with your actual backend URL
+        const response = await fetch("http://localhost:4000/api/projects");
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setProjects(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load projects. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   if (loading) return <div className="text-center p-6">Loading projects...</div>;
@@ -52,8 +49,28 @@ export default function ProjectListPage() {
                 key={project.id}
                 className="border rounded-xl p-5 hover:shadow-md transition bg-gray-50"
               >
-                <h2 className="text-xl font-semibold text-blue-700">{project.name}</h2>
+                <h2 className="text-xl font-semibold text-blue-700">
+                  {project.name}
+                </h2>
                 <p className="text-gray-600 mb-3">{project.description}</p>
 
-                <h3 className="font-medium mb-2">Tasks:</h3
-
+                {project.tasks && project.tasks.length > 0 ? (
+                  <>
+                    <h3 className="font-medium mb-2">Tasks:</h3>
+                    <ul className="list-disc list-inside text-gray-700">
+                      {project.tasks.map((task) => (
+                        <li key={task.id}>{task.title}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <p className="text-gray-500">No tasks yet for this project.</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
