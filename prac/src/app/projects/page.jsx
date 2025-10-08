@@ -49,8 +49,8 @@ export default function ProjectListPage() {
   if (error) return <ErrorMessage message={error} />;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-6">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-10">
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-4 sm:p-6 md:p-8">
         <h1 className="text-2xl font-bold mb-6 text-center">Project List</h1>
 
         {/* 🔍 Search bar */}
