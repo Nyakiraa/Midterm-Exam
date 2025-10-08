@@ -26,3 +26,4 @@ function validateLogin(data) {
 }
 
 module.exports = { validateRegistration, validateLogin };
+ 
