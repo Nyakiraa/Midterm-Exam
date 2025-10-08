@@ -20,7 +20,7 @@ async function registerUser({ username, password, role = 'user' } = {}) {
 		throw err;
 	}
 
-	// hash password
+	// hash password 
 	const salt = bcrypt.genSaltSync(10);
 	const hashed = bcrypt.hashSync(password, salt);
 
