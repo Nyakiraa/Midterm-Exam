@@ -1,8 +1,11 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { validateRegistration } = require('../validators/authValidator');
+const { validateRegistration, validateLogin } = require('../validators/authValidator');
 
-    //register a new user
+const JWT_SECRET = process.env.JWT_SECRET || 'please-change-this-secret';
+
+// register a new user
 async function registerUser({ username, password, role = 'user' } = {}) {
 	const { valid, errors } = validateRegistration({ username, password });
 	if (!valid) {
@@ -31,4 +34,34 @@ async function registerUser({ username, password, role = 'user' } = {}) {
 	return saved.toJSON();
 }
 
-module.exports = { registerUser };
+// authenticate a user and return a JWT + user (without password)
+async function authenticateUser({ username, password } = {}) {
+	const { valid, errors } = validateLogin({ username, password });
+	if (!valid) {
+		const err = new Error('Validation failed');
+		err.status = 400;
+		err.errors = errors;
+		throw err;
+	}
+
+	const user = await User.findOne({ username }).exec();
+	if (!user) {
+		const err = new Error('Invalid credentials');
+		err.status = 401;
+		throw err;
+	}
+
+	const match = bcrypt.compareSync(password, user.password);
+	if (!match) {
+		const err = new Error('Invalid credentials');
+		err.status = 401;
+		throw err;
+	}
+
+	const payload = { id: user.id, username: user.username, role: user.role };
+	const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+	return { token, user: user.toJSON() };
+}
+
+module.exports = { registerUser, authenticateUser };
