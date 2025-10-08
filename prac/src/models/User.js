@@ -1,8 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const { Schema } = mongoose;
-
-const UserSchema = new Schema(
+const UserSchema = new mongoose.Schema(
 	{
 		username: { type: String, required: true, unique: true },
 		password: { type: String, required: true },
@@ -11,6 +9,7 @@ const UserSchema = new Schema(
 	{ timestamps: true }
 );
 
+<<<<<<< Updated upstream
 // Map _id to id and remove sensitive/internal fields when converting to JSON
 UserSchema.set('toJSON', {
 	transform: (doc, ret) => {
@@ -25,3 +24,6 @@ UserSchema.set('toJSON', {
 
 // Avoid model overwrite issues in watch/dev environments
 module.exports = mongoose.models.User || mongoose.model('User', UserSchema);
+=======
+export default mongoose.model("User", UserSchema);
+>>>>>>> Stashed changes
