@@ -21,7 +21,7 @@ UserSchema.set('toJSON', {
 		delete ret.password;
 		return ret;
 	},
-});
+}); 
 
 // Avoid model overwrite issues in watch/dev environments
 module.exports = mongoose.models.User || mongoose.model('User', UserSchema);
