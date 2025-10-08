@@ -8,7 +8,8 @@ export default function LoginPage() {
   });
 
   const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,13 +26,43 @@ export default function LoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      setSuccess(true);
-      console.log("Login data:", formData);
-    } else {
-      setSuccess(false);
+    setError("");
+    setSuccess("");
+
+    if (!formData.email || !formData.password) {
+      setError("All fields are required");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:4000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      setSuccess("Login successful!");
+      console.log("Token:", data.token); // You’ll use this later for authentication
+      if (data.token) {
+        try {
+          localStorage.setItem("token", data.token);
+        } catch (e) {
+          console.warn("Could not save token to localStorage", e);
+        }
+      }
+
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -39,6 +70,8 @@ export default function LoginPage() {
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Login</h2>
+
+        {error && <p className="text-red-500 text-center mb-3">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -78,8 +111,8 @@ export default function LoginPage() {
         </form>
 
         {success && (
-          <p className="text-green-600 text-center mt-4">Login successful! (Mock)</p>
-        )}
+            <p className="text-green-600 text-center mt-4">{success}</p>
+          )}
       </div>
     </div>
   );
