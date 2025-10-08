@@ -1,0 +1,66 @@
+// src/app/controller/projController.js
+// Controller for Project CRUD operations
+
+const projService = require('../services/projService');
+// You may want to add project validators if available
+
+// Create a new project
+exports.createProject = async (req, res) => {
+  try {
+    // Add validation if you have a validator
+    const project = await projService.createProject(req.body);
+    res.status(201).json(project);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get all projects
+exports.getProjects = async (req, res) => {
+  try {
+    const projects = await projService.getProjects();
+    res.status(200).json(projects);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get a single project by ID
+exports.getProjectById = async (req, res) => {
+  try {
+    const project = await projService.getProjectById(req.params.id);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    res.status(200).json(project);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Update a project by ID
+exports.updateProject = async (req, res) => {
+  try {
+    // Add validation if you have a validator
+    const updatedProject = await projService.updateProject(req.params.id, req.body);
+    if (!updatedProject) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    res.status(200).json(updatedProject);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Delete a project by ID
+exports.deleteProject = async (req, res) => {
+  try {
+    const deleted = await projService.deleteProject(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
