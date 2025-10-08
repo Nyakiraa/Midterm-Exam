@@ -1,19 +1,19 @@
 const { register } = require('../../../controllers/authController');
+const { success, error } = require('../../../lib/response');
 
 /**
  * POST /api/register
  */
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+    return error(res, 'Method not allowed', 405);
   }
 
   try {
     const user = await register(req.body);
-    res.status(201).json({ data: user });
+    return success(res, user, 201);
   } catch (err) {
     const status = err.status || 500;
-    res.status(status).json({ error: err.message, errors: err.errors || null });
+    return error(res, err.message, status, err.errors || null);
   }
 };
